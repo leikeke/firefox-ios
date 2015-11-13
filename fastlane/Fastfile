@@ -41,6 +41,8 @@ platform :ios do
     ENV["BUILD_NAME"] = "#{ENV["BRANCH_NAME"]}-#{ENV["DATESTAMP"]}"
     puts ENV["BUILD_NAME"]
 
+    ENV["SIGH_USERNAME"] = options[:username]
+
     # checkout a new branch for build
     checkout_git_branch(
       base_branch: opts[:branch],
@@ -85,8 +87,6 @@ platform :ios do
     puts "Aurora: #{options}\n"
     setup(options: options)
 
-    ENV["SIGH_TEAM_ID"] = "9G8J6YA743"
-
     sigh(app_identifier: "org.mozilla.ios.FennecAurora",
       output_path: "./provisioning-profiles/" )
     sigh(app_identifier: "org.mozilla.ios.FennecAurora.SendTo",
@@ -102,7 +102,6 @@ platform :ios do
       sdk: "iphoneos",
       clean: true,
       export_method: "enterprise",
-      export_team_id: ENV["SIGH_TEAM_ID"],
       include_symbols: true,
       include_bitcode: false)
 
