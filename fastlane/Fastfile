@@ -88,13 +88,17 @@ platform :ios do
     setup(options: options)
 
     sigh(app_identifier: "org.mozilla.ios.FennecAurora",
-      output_path: "./provisioning-profiles/" )
+      output_path: "./provisioning-profiles/",
+      username: options[:username] || "ios-builds@mozilla.com" )
     sigh(app_identifier: "org.mozilla.ios.FennecAurora.SendTo",
-      output_path: "./provisioning-profiles/")
+      output_path: "./provisioning-profiles/",
+      username: options[:username] || "ios-builds@mozilla.com")
     sigh(app_identifier: "org.mozilla.ios.FennecAurora.ShareTo",
-      output_path: "./provisioning-profiles/" )
+      output_path: "./provisioning-profiles/",
+      username: options[:username] || "ios-builds@mozilla.com" )
     sigh(app_identifier: "org.mozilla.ios.FennecAurora.ViewLater",
-      output_path: "./provisioning-profiles/" )
+      output_path: "./provisioning-profiles/",
+      username: options[:username] || "ios-builds@mozilla.com" )
 
     gym(scheme: "FennecAurora",
       output_directory: "./builds/",
