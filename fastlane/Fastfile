@@ -81,6 +81,8 @@ platform :ios do
 
   desc "Builds an Aurora build"
   lane :aurora do |options|
+    options = options[:options] || options
+    puts "Aurora: #{options}\n"
     setup(options: options)
 
     ENV["SIGH_TEAM_ID"] = "9G8J6YA743"
@@ -106,7 +108,12 @@ platform :ios do
 
   end
 
-  desc "Makes a release build and takes marketing snapshots"
+  desc "Builds an l10n build"
+  lane :l10n do |options|
+    aurora(options)
+  end
+
+  desc "Takes marketing snapshots using current branch"
   lane :marketing do
     snapshot
     frameit(white: true)
