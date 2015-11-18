@@ -28,6 +28,8 @@ class TestSQLiteBookmarks: XCTestCase {
         do {
             try self.files.remove("TSQLBtestMirrorStorage.db")
         } catch {}
+
+        super.tearDown()
     }
 
     func testBookmarks() {
