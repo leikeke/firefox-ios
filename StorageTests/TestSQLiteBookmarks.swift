@@ -18,8 +18,20 @@ private func getBrowserDB(filename: String, files: FileAccessor) -> BrowserDB? {
 }
 
 class TestSQLiteBookmarks: XCTestCase {
+    let files = MockFiles()
+
+    override func tearDown() {
+        do {
+            try self.files.remove("TSQLBtestBookmarks.db")
+        } catch {}
+
+        do {
+            try self.files.remove("TSQLBtestMirrorStorage.db")
+        } catch {}
+    }
+
     func testBookmarks() {
-        guard let db = getBrowserDB("browser.db", files: MockFiles()) else {
+        guard let db = getBrowserDB("TSQLBtestBookmarks.db", files: self.files) else {
             XCTFail("Unable to create browser DB.")
             return
         }
@@ -28,47 +40,15 @@ class TestSQLiteBookmarks: XCTestCase {
         let url = "http://url1/"
         let u = url.asURL!
 
-        func addBookmark() -> Success {
-            return bookmarks.addToMobileBookmarks(u, title: "Title", favicon: nil)
-        }
-
-        let e1 = self.expectationWithDescription("Waiting for add.")
-        func modelContainsItem() -> Success {
-            return bookmarks.modelForFolder(BookmarkRoots.MobileFolderGUID).bind { res in
-                XCTAssertEqual((res.successValue?.current[0] as? BookmarkItem)?.url, url)
-                e1.fulfill()
-                return succeed()
-            }
-        }
-
-        let e2 = self.expectationWithDescription("Waiting for existence check.")
-        func itemExists() -> Success {
-            return bookmarks.isBookmarked(url).bind { res in
-                XCTAssertTrue(res.successValue ?? false)
-                e2.fulfill()
-                return succeed()
-            }
-        }
-
-        let e3 = self.expectationWithDescription("Waiting for delete.")
-        func removeItemFromModel() -> Success {
-            return bookmarks.removeByURL("") >>== {
-                XCTAssertTrue(true)
-                e3.fulfill()
-                return succeed()
-            }
-        }
-
-        addBookmark()
-            >>> modelContainsItem
-            >>> itemExists
-            >>> removeItemFromModel
-
-        self.waitForExpectationsWithTimeout(10.0) { foo in }
+        XCTAssertTrue(bookmarks.addToMobileBookmarks(u, title: "Title", favicon: nil).value.isSuccess)
+        let model = bookmarks.modelForFolder(BookmarkRoots.MobileFolderGUID).value.successValue
+        XCTAssertEqual((model?.current[0] as? BookmarkItem)?.url, url)
+        XCTAssertTrue(bookmarks.isBookmarked(url).value.successValue ?? false)
+        XCTAssertTrue(bookmarks.removeByURL("").value.isSuccess)
     }
 
     func testMirrorStorage() {
-        guard let db = getBrowserDB("browser.db", files: MockFiles()) else {
+        guard let db = getBrowserDB("TSQLBtestMirrorStorage.db", files: self.files) else {
             XCTFail("Unable to create browser DB.")
             return
         }
